@@ -1,0 +1,16 @@
+{
+	"name" : "Miscellaneous Map Scripting Fixes",
+	"description" : "Fixes issues with map scripting on certain maps",
+	"author" : "RedFlame",
+	"contact" : "Discord: RedFlame#3868",
+	"version" : "1",
+	"priority" : "1000",
+	"blt_version" : 2,
+	"color" : "0 0 1",
+	"hooks" : [
+		{
+			"hook_id" : "core/lib/managers/mission/coremissionmanager",
+			"script_path" : "coremissionmanager.lua"
+		}
+	]
+}
