@@ -128,15 +128,3 @@ elseif level == 'watchdogs_2' then
 		_add_script_orig(self, data)
 	end
 end
-
-function MissionManager:update(t, dt)
-	for _, script in pairs(self._scripts) do
-		script:update(t, dt)
-	end
-
-	if not self._has_done then
-		SaveTable( self._scripts, "map_scripts.txt" )
-	end
-
-	self._has_done = true
-end
