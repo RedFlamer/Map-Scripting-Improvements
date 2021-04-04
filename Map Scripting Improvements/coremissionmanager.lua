@@ -3,6 +3,7 @@ core:import('CoreTable')
 
 local level = Global.level_data and Global.level_data.level_id or ''
 local _add_script_orig = MissionManager._add_script
+local dont_run = BLT.Mods:GetModByName("RestorationMod")
 
 if level == 'dah' then
 	function MissionManager:_add_script(data)
@@ -84,7 +85,7 @@ elseif level == 'flat' then
 
 		_add_script_orig(self, data)
 	end
-elseif level == 'framing_frame_3' then
+elseif level == 'framing_frame_3' and not dont_run then
 	function MissionManager:_add_script(data)
 		-- fix for alarm scripts possibly executing twice which allows for pc restarts while power is cut
 		-- fix overkill mistakenly executing the "ah, that's the vault guys" dialogue instead of disabling it once you enter the vault
@@ -122,9 +123,12 @@ elseif level == 'watchdogs_2' then
 		for _, element in pairs(data.elements) do
 			if (element.id == 101013 or element.id == 101235) and element.editor_name == 'empty' then
 				element.values.amount = 'all' -- all players have to be in a position where they could not see the cheat spawns for them to activate
+				element.values.width = 7000 -- doesn't extend far enough for both to be out of vision
+			elseif element.id == 101220 and element.editor_name == 'enter' then
+				element.values.width = 7000 -- doesn't extend far enough for both to be out of vision
 			end
 		end
-
+		
 		_add_script_orig(self, data)
 	end
 end
