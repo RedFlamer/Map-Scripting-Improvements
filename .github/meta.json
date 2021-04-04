@@ -1,8 +1,8 @@
 [
     {
-        "ident" : "responsive_responders",
+        "ident" : "map_scripting_improvements",
         "hash" : "%HASH%",
-        "patchnotes_url" : "https://github.com/RedFlamer/Responsive-Responders/commits/main",
-        "download_url" : "https://github.com/RedFlamer/Responsive-Responders/releases/download/refs%2Fheads%2Fmain/Responsive.Responders.zip"
+        "patchnotes_url" : "https://github.com/RedFlamer/Map-Scripting-Improvements/commits/main",
+        "download_url" : "https://github.com/RedFlamer/Map-Scripting-Improvements/releases/download/refs%2Fheads%2Fmain/Map.Scripting.Improvements.zip"
     }
 ]
