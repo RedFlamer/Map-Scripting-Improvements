@@ -5,7 +5,8 @@ local level = Global.level_data and Global.level_data.level_id or ''
 local _add_script_orig = MissionManager._add_script
 local dont_run = BLT.Mods:GetModByName("RestorationMod")
 
-if level == 'dah' then
+if not Network:is_server() then
+elseif level == 'dah' then
 	function MissionManager:_add_script(data)
 		-- Why does a security room spawn disable the chandelier over the fountain?
 		for _, element in pairs(data.elements) do
