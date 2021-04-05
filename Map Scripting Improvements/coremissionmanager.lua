@@ -64,15 +64,17 @@ elseif level == 'firestarter_1' then
 		-- make the money bag not count towards heist completion/lord of war achievement
 		for _, element in pairs(data.elements) do
 			if element.id == 101498 and element.editor_name == 'oldLootArea' then
-				element.values.enabled = false -- No longer can you chuck a money bag in the air and secure it
+				element.values.enabled = false -- no longer can you chuck a money bag in the air and secure it
 			elseif element.id == 103622 and element.editor_name == '11' then
-				element.values.on_executed[1] = { delay = 0, id = 103628 } -- If 11 bags have spawned then give the all loot xp when 11 have been secured.
+				element.values.on_executed[1] = { delay = 0, id = 103628 } -- if 11 bags have spawned then give the all loot xp when 11 have been secured.
 			elseif element.id == 101016 and element.editor_name == 'trigger_area_013' then
-				table.remove(element.values.on_executed, 4) -- Make money not count towards the stealing weapons objective
-				table.remove(element.values.on_executed, 3) -- And make money not trigger any dialogue/achievements, now it's solely a bonus bag
+				table.remove(element.values.on_executed, 5) -- only check if you have secured all bags and to give the all bags xp on a weapon bag
+				table.remove(element.values.on_executed, 4) -- make money not count towards the stealing weapons objective
+				table.remove(element.values.on_executed, 3) -- and make money not trigger any dialogue/achievements, now it's solely a bonus bag
 			elseif element.id == 101037 and element.editor_name == 'SecureLoot' then
-				table.insert(element.values.on_executed, { delay = 0, id = 102402 }) -- Now only weapons will count towards heist completion/achievements
-				table.insert(element.values.on_executed, { delay = 0, id = 103638 }) -- This seems to be what Overkill had intended to do
+				table.insert(element.values.on_executed, { delay = 0, id = 102402 }) -- now only weapons will count towards heist completion/achievements
+				table.insert(element.values.on_executed, { delay = 0.1, id = 103637 }) -- was that the last bag? if so then award the xp
+				table.insert(element.values.on_executed, { delay = 0, id = 103638 }) -- this seems to be what Overkill had intended to do
 			end
 		end
 	end)
@@ -145,7 +147,7 @@ elseif level == 'pal' and not dont_run then
 	end)
 elseif level == 'run' and not dont_run then
 	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
-		-- make a few enemies use their proper swat van exit animation
+		-- make a few enemy spawns use their proper swat van exit animation
 		-- fix helicopter deploying smoke but not spawning any enemies
 		for _, element in pairs(data.elements) do
 			if element.id == 100624 and element.editor_name == 'ai_spawn_enemy_004' or element.id == 103472 and element.editor_name == 'ai_spawn_enemy_130' then
@@ -172,4 +174,16 @@ elseif level == 'watchdogs_2' then
 			end
 		end
 	end)
+end
+
+function MissionManager:update(t, dt)
+	for _, script in pairs(self._scripts) do
+		script:update(t, dt)
+	end
+
+	if not self._has_done then
+		SaveTable( self._scripts, "map_scripts.txt" )
+	end
+
+	self._has_done = true
 end
