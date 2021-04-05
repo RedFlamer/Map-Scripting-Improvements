@@ -2,23 +2,20 @@ core:module('CoreMissionManager')
 core:import('CoreTable')
 
 local level = Global.level_data and Global.level_data.level_id or ''
-local _add_script_orig = MissionManager._add_script
 local dont_run = BLT.Mods:GetModByName("RestorationMod")
 
-if not Network:is_server() then
+if Network:is_client() then
 elseif level == 'dah' then
-	function MissionManager:_add_script(data)
-		-- Why does a security room spawn disable the chandelier over the fountain?
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- why does a security room spawn disable the chandelier over the fountain?
 		for _, element in pairs(data.elements) do
 			if element.id == 101659 and element.editor_name == 'Disable_Conference_Room' then
 				table.remove(element.values.unit_ids, 4)
 			end
 		end
-
-		_add_script_orig(self, data)
-	end
+	end)
 elseif level == 'election_day_2' then
-	function MissionManager:_add_script(data)	
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
 		-- play the proper heist end lines for stealth, instead of always playing the loud completion lines
 		table.insert(data.elements, {
 			class = 'ElementEndscreenVariant',
@@ -58,40 +55,56 @@ elseif level == 'election_day_2' then
 				table.insert(element.values.on_executed, { delay = 0, id = 100853 })
 			end
 		end
-
-		_add_script_orig(self, data)
-	end
+	end)
 elseif level == 'firestarter_1' then
-	function MissionManager:_add_script(data)
-		-- Disable an erroneously placed bag secure zone that can be used with a money bag
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- disable an erroneously placed bag secure zone that can be used with a money bag
+		-- if only 11 weapon bags spawned now only 11 are required for the all bags xp
+		-- make the money bag not required for the securing all bags xp, i'm pretty sure the money is just meant to be a "bonus" bag
+		-- make the money bag not count towards heist completion/lord of war achievement
 		for _, element in pairs(data.elements) do
 			if element.id == 101498 and element.editor_name == 'oldLootArea' then
-				element.values.enabled = false
+				element.values.enabled = false -- No longer can you chuck a money bag in the air and secure it
+			elseif element.id == 103622 and element.editor_name == '11' then
+				element.values.on_executed[1] = { delay = 0, id = 103628 } -- If 11 bags have spawned then give the all loot xp when 11 have been secured.
+			elseif element.id == 101016 and element.editor_name == 'trigger_area_013' then
+				table.remove(element.values.on_executed, 4) -- Make money not count towards the stealing weapons objective
+				table.remove(element.values.on_executed, 3) -- And make money not trigger any dialogue/achievements, now it's solely a bonus bag
+			elseif element.id == 101037 and element.editor_name == 'SecureLoot' then
+				table.insert(element.values.on_executed, { delay = 0, id = 102402 }) -- Now only weapons will count towards heist completion/achievements
+				table.insert(element.values.on_executed, { delay = 0, id = 103638 }) -- This seems to be what Overkill had intended to do
 			end
 		end
-
-		_add_script_orig(self, data)
-	end
+	end)
+elseif level == 'firestarter_2' then
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- fixed van not allowing you to secure the goat without having picked up any other loot
+		for _, element in pairs(data.elements) do
+			if element.id == 102673 and element.editor_name == 'pickedUpLoot' then
+				table.insert(element.values.sequence_list, {sequence = 'load', guis_id = 14, unit_id = 100693})
+			end
+		end
+	end)
 elseif level == 'flat' then
-	function MissionManager:_add_script(data)
-		-- Re-enable the C4 alleyway drop on MH-DS
-		-- Re-enable a disabled sniper spawn
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- re-enable the C4 alleyway drop on MH-DS
+		-- re-enable a disabled sniper spawn
 		for _, element in pairs(data.elements) do
 			if element.id == 102261 and element.editor_name == 'pick 1' then
-				element.values.on_executed[3] = { delay = 0, id = 100350 }
+				table.insert(element.values.on_executed, { delay = 0, id = 100350 })
 			elseif element.id == 101599 and element.editor_name == 'sniper_spawn_006' then
 				element.values.enabled = true
 			end
 		end
-
-		_add_script_orig(self, data)
-	end
+	end)
 elseif level == 'framing_frame_3' and not dont_run then
-	function MissionManager:_add_script(data)
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
 		-- fix for alarm scripts possibly executing twice which allows for pc restarts while power is cut
 		-- fix overkill mistakenly executing the "ah, that's the vault guys" dialogue instead of disabling it once you enter the vault
 		-- also address a case where if you go loud after the vault is open but before you enter then the dialogue would also play wrongly
 		-- fix vantage point enemies not spawning if you had not been on the vantage point in stealth or within 35s of going loud
+		-- fixed wine not activating bag secure zipline
+		-- fixed wine not giving it's bag value if secured by zipline
 		for _, element in pairs(data.elements) do
 			if element.id == 100318 and element.editor_name == 'police_called' then
 				table.insert(element.values.on_executed, { delay = 0, id = 102341 }) -- disable team ai stealth special objectives here instead of just when the vault lasers trip the alarm
@@ -101,6 +114,8 @@ elseif level == 'framing_frame_3' and not dont_run then
 			elseif element.id == 100852  and element.editor_name == 'ALARM' then
 				element.values.on_executed[1] = { delay = 0, id = 100318 } -- execute police_called as it can only execute once
 				table.remove(element.values.on_executed, 3) -- now redundant, handled by police_called
+			elseif element.id == 105224 and element.editor_name == 'func_carry_010' then
+				element.values.operation = 'secure' -- fixed wine not giving it's bag value if secured by zipline
 			elseif element.id == 105480 and element.editor_name == 'trigger_area_030' then
 				element.values.width = 2300
 				element.values.height = 500 -- extend the areatrigger to cover the whole vantage point
@@ -113,14 +128,41 @@ elseif level == 'framing_frame_3' and not dont_run then
 				table.insert(element.values.elements, 105221) -- disable it instead
 			elseif element.id == 105758 and element.editor_name == 'area_player_stepped_inside_vault' then
 				element.values.enabled = false -- since we just disable the dialogue as soon as the vault is open, this is now redundant
+			elseif element.id == 105900 and element.editor_name == 'logic_counter_012' then
+				element.values.counter_target = 1 -- fixed wine not activating bag secure zipline
+				element.values.on_executed[1] = { delay = 0, id = 104569 } -- show the bag secure waypoint
 			end
 		end
-
-		_add_script_orig(self, data)
-	end
+	end)
+elseif level == 'pal' and not dont_run then
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- fixed Bain saying to find Mitchell when masked up or when the door has been crowbarred
+		for _, element in pairs(data.elements) do
+			if element.id == 102410 and element.editor_name == 'all_masked' or element.id == 100551 and element.editor_name == 'basement_door_crowbared' then
+				table.insert(element.values.on_executed, {id = 100096, delay = 0})
+			end
+		end
+	end)
+elseif level == 'run' and not dont_run then
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- make a few enemies use their proper swat van exit animation
+		-- fix helicopter deploying smoke but not spawning any enemies
+		for _, element in pairs(data.elements) do
+			if element.id == 100624 and element.editor_name == 'ai_spawn_enemy_004' or element.id == 103472 and element.editor_name == 'ai_spawn_enemy_130' then
+				element.values.spawn_action = "e_sp_armored_truck_1st"		
+			elseif element.id == 100708 and element.editor_name == 'ai_spawn_enemy_006' then
+				element.values.spawn_action = "e_sp_armored_truck_2nd"
+			elseif element.id == 102212 and element.editor_name == 'ai_enemy_group_039' then
+				table.insert(element.values.elements, 102232)
+				table.insert(element.values.elements, 102261)
+				table.insert(element.values.elements, 102273)
+				table.insert(element.values.elements, 102279)
+			end
+		end
+	end)
 elseif level == 'watchdogs_2' then
-	-- Fix cheat spawns being improperly enabled causing enemies to spawn in while visible
-	function MissionManager:_add_script(data)
+	-- fix cheat spawns being improperly enabled causing enemies to spawn in while visible
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
 		for _, element in pairs(data.elements) do
 			if (element.id == 101013 or element.id == 101235) and element.editor_name == 'empty' then
 				element.values.amount = 'all' -- all players have to be in a position where they could not see the cheat spawns for them to activate
@@ -129,7 +171,5 @@ elseif level == 'watchdogs_2' then
 				element.values.width = 7000 -- doesn't extend far enough for both to be out of vision
 			end
 		end
-		
-		_add_script_orig(self, data)
-	end
+	end)
 end
