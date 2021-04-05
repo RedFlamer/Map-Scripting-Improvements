@@ -5,6 +5,16 @@ local level = Global.level_data and Global.level_data.level_id or ''
 local dont_run = BLT.Mods:GetModByName("RestorationMod")
 
 if Network:is_client() then
+elseif level == 'branchbank' or level == 'branchbank_cash' or level == 'branchbank_deposit' or level == 'branchbank_gold' or level == 'branchbank_gold_prof' or level == 'branchbank_prof' or level == 'firestarter_3' then -- the fuck is this shit
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- that's them all right! just seeing them dead makes my blood boil
+		-- fixed bain using his dialogue for the john wick civvies when they've been killed
+		for _, element in pairs(data.elements) do
+			if element.id == 105755 and element.editor_name == 'disable_VO' then
+				table.insert(element.values.elements, 105700)
+			end
+		end
+	end)
 elseif level == 'dah' then
 	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
 		-- why does a security room spawn disable the chandelier over the fountain?
@@ -174,16 +184,4 @@ elseif level == 'watchdogs_2' then
 			end
 		end
 	end)
-end
-
-function MissionManager:update(t, dt)
-	for _, script in pairs(self._scripts) do
-		script:update(t, dt)
-	end
-
-	if not self._has_done then
-		SaveTable( self._scripts, "map_scripts.txt" )
-	end
-
-	self._has_done = true
 end
