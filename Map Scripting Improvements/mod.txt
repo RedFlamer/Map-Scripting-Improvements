@@ -8,10 +8,8 @@
 	"blt_version" : 2,
 	"color" : "0 0 1",
 	"hooks" : [
-		{
-			"hook_id" : "core/lib/managers/mission/coremissionmanager",
-			"script_path" : "coremissionmanager.lua"
-		}
+		{ "hook_id" : "core/lib/managers/mission/coremissionmanager", "script_path" : "coremissionmanager.lua" },
+		{ "hook_id" : "core/lib/managers/coreworldinstancemanager", "script_path" : "coreworldinstancemanager.lua" }
 	],
 	"updates" : [
 		{

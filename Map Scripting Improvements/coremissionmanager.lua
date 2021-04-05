@@ -73,7 +73,7 @@ elseif level == 'firestarter_1' then
 				table.remove(element.values.on_executed, 3) -- and make money not trigger any dialogue/achievements, now it's solely a bonus bag
 			elseif element.id == 101037 and element.editor_name == 'SecureLoot' then
 				table.insert(element.values.on_executed, { delay = 0, id = 102402 }) -- now only weapons will count towards heist completion/achievements
-				table.insert(element.values.on_executed, { delay = 0.1, id = 103637 }) -- was that the last bag? if so then award the xp
+				table.insert(element.values.on_executed, { delay = 0.01, id = 103637 }) -- was that the last bag? if so then award the xp
 				table.insert(element.values.on_executed, { delay = 0, id = 103638 }) -- this seems to be what Overkill had intended to do
 			end
 		end
@@ -94,7 +94,7 @@ elseif level == 'flat' then
 		for _, element in pairs(data.elements) do
 			if element.id == 102261 and element.editor_name == 'pick 1' then
 				table.insert(element.values.on_executed, { delay = 0, id = 100350 })
-			elseif element.id == 101599 and element.editor_name == 'sniper_spawn_006' then
+			elseif element.id == 101599 and element.editor_name == 'sniper_spawn_006' or element.id == 101521 and element.editor_name == 'SO Sniper' then
 				element.values.enabled = true
 			end
 		end
