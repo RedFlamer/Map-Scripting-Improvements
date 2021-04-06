@@ -66,6 +66,15 @@ elseif level == 'election_day_2' then
 			end
 		end
 	end)
+elseif level == 'escape_park' or level == 'escape_park_day' then
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		-- fixed some sniping swats not spawning
+		for _, element in pairs(data.elements) do
+			if element.id == 102486 and element.editor_name == 'escape_2_link' or element.id == 102457 and element.editor_name == 'escape_3_link' then
+				table.insert(element.values.on_executed, { delay = 0, id = 100677 })
+			end
+		end
+	end)
 elseif level == 'firestarter_1' then
 	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
 		-- disable an erroneously placed bag secure zone that can be used with a money bag
@@ -83,8 +92,8 @@ elseif level == 'firestarter_1' then
 				table.remove(element.values.on_executed, 3) -- and make money not trigger any dialogue/achievements, now it's solely a bonus bag
 			elseif element.id == 101037 and element.editor_name == 'SecureLoot' then
 				table.insert(element.values.on_executed, { delay = 0, id = 102402 }) -- now only weapons will count towards heist completion/achievements
-				table.insert(element.values.on_executed, { delay = 0.01, id = 103637 }) -- was that the last bag? if so then award the xp
 				table.insert(element.values.on_executed, { delay = 0, id = 103638 }) -- this seems to be what Overkill had intended to do
+				table.insert(element.values.on_executed, { delay = 0, id = 103637 }) -- was that the last bag? if so then award the xp
 			end
 		end
 	end)
@@ -103,9 +112,9 @@ elseif level == 'flat' then
 		-- re-enable a disabled sniper spawn
 		for _, element in pairs(data.elements) do
 			if element.id == 102261 and element.editor_name == 'pick 1' then
-				table.insert(element.values.on_executed, { delay = 0, id = 100350 })
+				table.insert(element.values.on_executed, { delay = 0, id = 100350 }) -- c4 has a 33% chance to drop in the alley
 			elseif element.id == 101599 and element.editor_name == 'sniper_spawn_006' or element.id == 101521 and element.editor_name == 'SO Sniper' then
-				element.values.enabled = true
+				element.values.enabled = true -- enable a sniper spawn and his special objective
 			end
 		end
 	end)
@@ -146,6 +155,15 @@ elseif level == 'framing_frame_3' and not dont_run then
 			end
 		end
 	end)
+elseif level == 'nmh' then
+	-- fixed the dozer event so it can actually occur on overkill+
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		for _, element in pairs(data.elements) do
+			if element.id == 104124 and element.editor_name == 'logic_chance_operator_004' then
+				element.values.chance = 50 -- 50% chance for a dozer and shield to enter the elevator through the flames once it has reached the top instead of 0%
+			end
+		end
+	end)
 elseif level == 'pal' and not dont_run then
 	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
 		-- fixed Bain saying to find Mitchell when masked up or when the door has been crowbarred
@@ -161,19 +179,28 @@ elseif level == 'run' and not dont_run then
 		-- fix helicopter deploying smoke but not spawning any enemies
 		for _, element in pairs(data.elements) do
 			if element.id == 100624 and element.editor_name == 'ai_spawn_enemy_004' or element.id == 103472 and element.editor_name == 'ai_spawn_enemy_130' then
-				element.values.spawn_action = "e_sp_armored_truck_1st"		
+				element.values.spawn_action = "e_sp_armored_truck_1st"
 			elseif element.id == 100708 and element.editor_name == 'ai_spawn_enemy_006' then
 				element.values.spawn_action = "e_sp_armored_truck_2nd"
 			elseif element.id == 102212 and element.editor_name == 'ai_enemy_group_039' then
-				table.insert(element.values.elements, 102232)
+				table.insert(element.values.elements, 102232) -- make the helicopter actually spawn some coppers
 				table.insert(element.values.elements, 102261)
 				table.insert(element.values.elements, 102273)
 				table.insert(element.values.elements, 102279)
 			end
 		end
 	end)
+elseif level == 'vit' then
+	-- fix a guard randomly dying on the surface
+	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
+		for _, element in pairs(data.elements) do
+			if element.id == 104080 and element.editor_name == 'func_disable_unit_058' then
+				table.insert(element.values.unit_ids, 101268)
+			end
+		end
+	end)
 elseif level == 'watchdogs_2' then
-	-- fix cheat spawns being improperly enabled causing enemies to spawn in while visible
+	-- fix cheat spawns being improperly enabled causing enemies to spawn in while being directly visible
 	Hooks:PreHook(MissionManager, "_add_script", "scripting_improvements_add_script", function(self, data)
 		for _, element in pairs(data.elements) do
 			if (element.id == 101013 or element.id == 101235) and element.editor_name == 'empty' then
