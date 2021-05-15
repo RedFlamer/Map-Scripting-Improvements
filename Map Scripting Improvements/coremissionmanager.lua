@@ -99,7 +99,7 @@ elseif level == 'firestarter_1' then
 			elseif element.id == 103162 and element.editor_name == 'trigger_area_017' then
 				table.insert(element.values.on_executed, { delay = 0, id = 101359 }) -- enable reinforce points inside/outside the hangar
 			elseif element.id == 103211 and element.editor_name == 'trigger_area_018' then
-				table.insert(element.values.on_executed, { delay = 0, id = 101359 }) -- enable reinforce points inside/outside the hangar
+				table.insert(element.values.on_executed, { delay = 0, id = 101350 }) -- enable reinforce points inside/outside the hangar
 			elseif element.id == 104465 and element.editor_name == 'func_carry_005' or element.id == 104467 and element.editor_name == 'func_carry_006' or element.id == 104468 and element.editor_name == 'func_carry_007' or element.id == 104469 and element.editor_name == 'func_carry_008' then
 				table.remove(element.values.on_executed, 1)
 			end
