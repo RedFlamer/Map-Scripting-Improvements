@@ -81,6 +81,8 @@ elseif level == 'firestarter_1' then
 		-- if only 11 weapon bags spawned now only 11 are required for the all bags xp
 		-- make the money bag not required for the securing all bags xp, i'm pretty sure the money is just meant to be a "bonus" bag
 		-- make the money bag not count towards heist completion/lord of war achievement
+		-- make money bags not blow up when thrown in the gas tank
+		-- enable reinforce points on two of the hangars, requires Streamlined Heisting for cops to actually reinforce
 		for _, element in pairs(data.elements) do
 			if element.id == 101498 and element.editor_name == 'oldLootArea' then
 				element.values.enabled = false -- no longer can you chuck a money bag in the air and secure it
@@ -94,6 +96,12 @@ elseif level == 'firestarter_1' then
 				table.insert(element.values.on_executed, { delay = 0, id = 102402 }) -- now only weapons will count towards heist completion/achievements
 				table.insert(element.values.on_executed, { delay = 0, id = 103638 }) -- this seems to be what Overkill had intended to do
 				table.insert(element.values.on_executed, { delay = 0, id = 103637 }) -- was that the last bag? if so then award the xp
+			elseif element.id == 103162 and element.editor_name == 'trigger_area_017' then
+				table.insert(element.values.on_executed, { delay = 0, id = 101359 }) -- enable reinforce points inside/outside the hangar
+			elseif element.id == 101360 and element.editor_name == 'trigger_area_018' then
+				table.insert(element.values.on_executed, { delay = 0, id = 101359 }) -- enable reinforce points inside/outside the hangar
+			elseif element.id == 104465 and element.editor_name == 'func_carry_005' or element.id == 104467 and element.editor_name == 'func_carry_006' or element.id == 104468 and element.editor_name == 'func_carry_007' or element.id == 104469 and element.editor_name == 'func_carry_008' then
+				table.remove(element.values.on_executed, 1)
 			end
 		end
 	end)
@@ -126,6 +134,7 @@ elseif level == 'framing_frame_3' and not dont_run then
 		-- fix vantage point enemies not spawning if you had not been on the vantage point in stealth or within 35s of going loud
 		-- fixed wine not activating bag secure zipline
 		-- fixed wine not giving it's bag value if secured by zipline
+		-- fixed a toggle not being hooked up, i'm not sure exactly if it causes any issues, but it's fixed
 		for _, element in pairs(data.elements) do
 			if element.id == 100318 and element.editor_name == 'police_called' then
 				table.insert(element.values.on_executed, { delay = 0, id = 102341 }) -- disable team ai stealth special objectives here instead of just when the vault lasers trip the alarm
@@ -135,6 +144,8 @@ elseif level == 'framing_frame_3' and not dont_run then
 			elseif element.id == 100852  and element.editor_name == 'ALARM' then
 				element.values.on_executed[1] = { delay = 0, id = 100318 } -- execute police_called as it can only execute once
 				table.remove(element.values.on_executed, 3) -- now redundant, handled by police_called
+			elseif element.id == 102047 and element.editor_name == 'hide_all_vault_units003' then
+				table.insert(element.values.on_executed, { delay = 0, id = 104885 }) -- not hooked up as it should be
 			elseif element.id == 105224 and element.editor_name == 'func_carry_010' then
 				element.values.operation = 'secure' -- fixed wine not giving it's bag value if secured by zipline
 			elseif element.id == 105480 and element.editor_name == 'trigger_area_030' then
