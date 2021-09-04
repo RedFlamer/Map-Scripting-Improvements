@@ -2,7 +2,7 @@
 	"name" : "Map Scripting Improvements",
 	"description" : "Fixes and improves map scripting on many heists.",
 	"author" : "RedFlame",
-	"contact" : "Discord: RedFlame#3868",
+	"contact" : "Discord: RedFlame#3870",
 	"version" : "1",
 	"priority" : "1000",
 	"blt_version" : 2,
